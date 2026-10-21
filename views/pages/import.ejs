@@ -1,0 +1,75 @@
+<%- include('../partials/head', { title: 'Impor' }) %>
+<h1>Impor</h1>
+
+<form method="post" action="/import/upload?_csrf=<%= csrfToken %>" enctype="multipart/form-data" class="card narrow">
+  <label>Akun tujuan
+    <select name="accountId" required>
+      <option value="">Pilih akun</option>
+      <% accounts.forEach(function (a) { %>
+        <option value="<%= a.id %>"><%= a.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>File CSV <input type="file" name="file" accept=".csv,text/csv" required></label>
+  <button type="submit">Unggah</button>
+</form>
+
+<p class="muted">
+  Kolom wajib: <code>date</code>/<code>tanggal</code>, <code>amount</code>/<code>jumlah</code>,
+  <code>description</code>/<code>keterangan</code>. Opsional: <code>type</code>/<code>tipe</code>
+  (<code>expense</code> atau <code>income</code>). Kolom debit/kredit terpisah tidak didukung.
+  Maksimal 2 MB dan 2000 baris. Semua baris ditinjau dulu sebelum disimpan.
+</p>
+
+<h2>Screenshot atau PDF (AI)</h2>
+<p class="muted">
+  Potong gambar agar hanya berisi daftar transaksi. Jangan sertakan nomor rekening atau nama.
+  Hasil AI selalu ditinjau dulu sebelum disimpan.
+</p>
+<form method="post" action="/import/ai?_csrf=<%= csrfToken %>" enctype="multipart/form-data" class="card narrow">
+  <label>Akun tujuan
+    <select name="accountId" required>
+      <option value="">Pilih akun</option>
+      <% accounts.forEach(function (a) { %>
+        <option value="<%= a.id %>"><%= a.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>File <input type="file" name="file" accept=".png,.jpg,.jpeg,.webp,.pdf" required></label>
+  <button type="submit">Baca dengan AI</button>
+</form>
+
+<h2>Riwayat impor</h2>
+<% if (!batches.length) { %>
+  <p class="muted">Belum ada impor.</p>
+<% } else { %>
+<table>
+  <thead>
+    <tr>
+      <th>Sumber</th>
+      <th>File</th>
+      <th>Status</th>
+      <th class="num">Disimpan</th>
+      <th class="num">Dilewati</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% batches.forEach(function (b) { %>
+      <tr>
+        <td><%= b.source %></td>
+        <td><%= b.filename || '-' %></td>
+        <td>
+          <% if (b.status === 'pending') { %>
+            <a href="/import/<%= b.id %>">Tinjau</a>
+          <% } else { %>
+            <span class="badge <%= b.status === 'committed' ? 'badge-ok' : 'badge-warn' %>"><%= b.status === 'committed' ? 'Selesai' : 'Dibuang' %></span>
+          <% } %>
+        </td>
+        <td class="num"><%= b.rows_added %></td>
+        <td class="num"><%= b.rows_skipped %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>
+<%- include('../partials/foot') %>

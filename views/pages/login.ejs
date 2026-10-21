@@ -1,0 +1,10 @@
+<%- include('../partials/head', { title: 'Masuk' }) %>
+<h1>Masuk</h1>
+<form method="post" action="/login" class="card narrow">
+  <%- include('../partials/csrf') %>
+  <% if (error) { %><p class="flash flash-error"><%= error %></p><% } %>
+  <label>Username <input name="username" required autofocus autocomplete="username"></label>
+  <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+  <button type="submit">Masuk</button>
+</form>
+<%- include('../partials/foot') %>

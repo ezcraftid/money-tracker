@@ -1,0 +1,37 @@
+<%- include('../partials/head', { title: 'Anggaran' }) %>
+<h1>Anggaran</h1>
+<p class="muted">Bulan ini. Kosongkan atau isi 0 untuk menghapus anggaran.</p>
+
+<% if (!budgets.length) { %>
+  <p class="muted">Belum ada kategori pengeluaran.</p>
+<% } else { %>
+<table>
+  <thead>
+    <tr>
+      <th>Kategori</th>
+      <th class="num">Terpakai</th>
+      <th class="num">Batas</th>
+      <th class="num">Persentase</th>
+      <th>Batas per bulan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% budgets.forEach(function (b) { %>
+      <tr>
+        <td><%= b.name %></td>
+        <td class="num"><%= rupiah(b.spent) %></td>
+        <td class="num"><%= b.monthly_limit ? rupiah(b.monthly_limit) : '-' %></td>
+        <td class="num"><%= b.percent !== null ? b.percent + '%' : '-' %></td>
+        <td>
+          <form method="post" action="/budgets/<%= b.id %>" class="inline-form">
+            <%- include('../partials/csrf') %>
+            <input name="monthlyLimit" inputmode="numeric" aria-label="Batas per bulan untuk <%= b.name %>" value="<%= b.monthly_limit || '' %>" placeholder="Batas per bulan (Rp)">
+            <button type="submit" class="small">Simpan</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>
+<%- include('../partials/foot') %>

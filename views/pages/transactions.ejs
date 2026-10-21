@@ -1,0 +1,77 @@
+<%- include('../partials/head', { title: 'Transaksi' }) %>
+<h1>Transaksi</h1>
+
+<form method="get" action="/transactions" class="card row">
+  <label>Bulan <input type="month" name="month" value="<%= query.month || '' %>"></label>
+  <label>Akun
+    <select name="account">
+      <option value="">Semua akun</option>
+      <% accounts.forEach(function (a) { %>
+        <option value="<%= a.id %>" <%= String(query.account || '') === String(a.id) ? 'selected' : '' %>><%= a.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Kategori
+    <select name="category">
+      <option value="">Semua kategori</option>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c.id %>" <%= String(query.category || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <button type="submit" class="secondary">Terapkan</button>
+  <a class="button secondary" href="/transactions">Reset</a>
+  <a class="button" href="/transactions/new">Tambah</a>
+</form>
+
+<p class="muted">Total <%= total %> transaksi</p>
+
+<% if (!transactions.length) { %>
+  <p class="muted">Belum ada transaksi.</p>
+<% } else { %>
+<table>
+  <thead>
+    <tr>
+      <th>Tanggal</th>
+      <th>Deskripsi</th>
+      <th>Kategori</th>
+      <th>Akun</th>
+      <th class="num">Jumlah</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.forEach(function (t) { %>
+      <tr>
+        <td><%= dateID(t.date) %></td>
+        <td><%= t.description %></td>
+        <td><%= t.category_name || '-' %></td>
+        <td><%= t.account_name %></td>
+        <td class="num"><%= t.type === 'expense' ? '- ' : '' %><%= rupiah(t.amount) %></td>
+        <td>
+          <a href="/transactions/<%= t.id %>/edit">Ubah</a>
+          <form method="post" action="/transactions/<%= t.id %>/delete" data-confirm="Hapus transaksi ini?" class="inline-form">
+            <%- include('../partials/csrf') %>
+            <button type="submit" class="danger small">Hapus</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>
+
+<% if (pages > 1) { %>
+  <nav class="row">
+    <% for (var p = 1; p <= pages; p++) { %>
+      <% var q = new URLSearchParams(query); q.set('page', String(p)); %>
+      <% if (p === page) { %>
+        <span class="muted"><%= p %></span>
+      <% } else { %>
+        <a href="/transactions?<%= q.toString() %>"><%= p %></a>
+      <% } %>
+    <% } %>
+  </nav>
+<% } %>
+<script src="/js/confirm-delete.js" defer></script>
+<%- include('../partials/foot') %>

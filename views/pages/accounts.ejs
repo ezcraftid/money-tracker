@@ -1,0 +1,51 @@
+<%- include('../partials/head', { title: 'Akun' }) %>
+<h1>Akun</h1>
+
+<% if (errors && errors.length) { %>
+  <ul class="flash flash-error">
+    <% errors.forEach(function (e) { %><li><%= e %></li><% }) %>
+  </ul>
+<% } %>
+
+<% if (!accounts.length) { %>
+  <p class="muted">Belum ada akun. Tambahkan dulu.</p>
+<% } else { %>
+  <% accounts.forEach(function (a) { %>
+    <div class="card">
+      <form method="post" action="/accounts/<%= a.id %>" class="row">
+        <%- include('../partials/csrf') %>
+        <label>Nama <input name="name" value="<%= a.name %>" required></label>
+        <label>Jenis
+          <select name="type">
+            <option value="cash" <%= a.type === 'cash' ? 'selected' : '' %>>Tunai</option>
+            <option value="bank" <%= a.type === 'bank' ? 'selected' : '' %>>Bank</option>
+            <option value="ewallet" <%= a.type === 'ewallet' ? 'selected' : '' %>>E-Wallet</option>
+          </select>
+        </label>
+        <label>Saldo awal <input name="initialBalance" value="<%= a.initial_balance %>"></label>
+        <button type="submit" class="secondary">Simpan</button>
+      </form>
+      <form method="post" action="/accounts/<%= a.id %>/delete" data-confirm="Hapus akun ini?">
+        <%- include('../partials/csrf') %>
+        <button type="submit" class="danger small">Hapus</button>
+      </form>
+    </div>
+  <% }) %>
+<% } %>
+
+<h2>Tambah akun</h2>
+<form method="post" action="/accounts" class="card narrow">
+  <%- include('../partials/csrf') %>
+  <label>Nama <input name="name" value="<%= form.name || '' %>" required></label>
+  <label>Jenis
+    <select name="type">
+      <option value="cash">Tunai</option>
+      <option value="bank">Bank</option>
+      <option value="ewallet">E-Wallet</option>
+    </select>
+  </label>
+  <label>Saldo awal <input name="initialBalance" value="<%= form.initialBalance || '' %>"></label>
+  <button type="submit">Simpan</button>
+</form>
+<script src="/js/confirm-delete.js" defer></script>
+<%- include('../partials/foot') %>

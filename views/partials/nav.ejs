@@ -1,0 +1,12 @@
+<nav class="nav">
+  <a href="/">Dashboard</a>
+  <a href="/transactions">Transaksi</a>
+  <a href="/accounts">Akun</a>
+  <a href="/categories">Kategori</a>
+  <a href="/budgets">Anggaran</a>
+  <a href="/import">Impor</a>
+  <form method="post" action="/logout" class="nav-logout">
+    <%- include('csrf') %>
+    <button type="submit" class="link-button">Keluar</button>
+  </form>
+</nav>

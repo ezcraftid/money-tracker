@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title: title }) %>
+<h1><%= title %></h1>
+
+<% if (errors && errors.length) { %>
+  <ul class="flash flash-error">
+    <% errors.forEach(function (e) { %><li><%= e %></li><% }) %>
+  </ul>
+<% } %>
+
+<form method="post" action="<%= action %>" class="card narrow" id="transaction-form">
+  <%- include('../partials/csrf') %>
+  <label>Tanggal <input type="date" name="date" value="<%= form.date || '' %>" required></label>
+  <label>Jenis
+    <span class="radio"><input type="radio" name="type" value="expense" <%= form.type === 'expense' ? 'checked' : '' %>> Pengeluaran</span>
+    <span class="radio"><input type="radio" name="type" value="income" <%= form.type === 'income' ? 'checked' : '' %>> Pemasukan</span>
+  </label>
+  <label>Jumlah <input name="amount" inputmode="numeric" value="<%= form.amount || '' %>" required></label>
+  <label>Akun
+    <select name="accountId" required>
+      <option value="">Pilih akun</option>
+      <% accounts.forEach(function (a) { %>
+        <option value="<%= a.id %>" <%= String(form.accountId || '') === String(a.id) ? 'selected' : '' %>><%= a.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Kategori
+    <select name="categoryId" id="transaction-category">
+      <option value="">Tanpa kategori</option>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c.id %>" data-kind="<%= c.kind %>" <%= String(form.categoryId || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Deskripsi <textarea name="description" rows="2"><%= form.description || '' %></textarea></label>
+  <button type="submit">Simpan</button>
+  <a class="button secondary" href="/transactions">Batal</a>
+</form>
+<script src="/js/transaction-form.js" defer></script>
+<%- include('../partials/foot') %>

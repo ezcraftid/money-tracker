@@ -1,0 +1,66 @@
+<%- include('../partials/head', { title: 'Tinjau Impor' }) %>
+<h1>Tinjau Impor</h1>
+<p class="muted">Sumber: <%= batch.source %> &middot; File: <%= batch.filename || '-' %> &middot; <%= rows.length %> baris</p>
+
+<% if (warnings && warnings.length) { %>
+  <ul class="flash flash-warn">
+    <% warnings.forEach(function (w) { %><li><%= w %></li><% }) %>
+  </ul>
+<% } %>
+
+<form method="post" action="/import/<%= batch.id %>/commit">
+  <%- include('../partials/csrf') %>
+  <table>
+    <thead>
+      <tr>
+        <th>Baris</th>
+        <th>Tanggal</th>
+        <th>Deskripsi</th>
+        <th class="num">Jumlah</th>
+        <th>Jenis</th>
+        <th>Status</th>
+        <th>Kategori</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% rows.forEach(function (row) { %>
+        <tr>
+          <td><%= row.line %></td>
+          <td><%= row.date ? dateID(row.date) : '-' %></td>
+          <td><%= row.description || '-' %></td>
+          <td class="num"><%= row.amount !== null ? rupiah(row.amount) : '-' %></td>
+          <td><%= row.type === 'income' ? 'Pemasukan' : row.type === 'expense' ? 'Pengeluaran' : '-' %></td>
+          <td>
+            <% if (row.status === 'new') { %>
+              <span class="badge badge-ok">Baru</span>
+            <% } else if (row.status === 'duplicate') { %>
+              <span class="badge badge-warn">Duplikat</span>
+            <% } else { %>
+              <span class="badge badge-over">Tidak valid</span>
+              <% if (row.error) { %><span class="muted small"><%= row.error %></span><% } %>
+            <% } %>
+          </td>
+          <td>
+            <% if (row.status === 'new') { %>
+              <select name="cat_<%= row.line %>" aria-label="Kategori baris <%= row.line %>">
+                <option value="">Tanpa kategori</option>
+                <% categories.filter(function (c) { return c.kind === row.type; }).forEach(function (c) { %>
+                  <option value="<%= c.id %>" <%= String(row.categoryId) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+                <% }) %>
+              </select>
+            <% } else { %>
+              <span class="muted">-</span>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <button type="submit">Simpan yang baru</button>
+</form>
+
+<form method="post" action="/import/<%= batch.id %>/discard" class="inline-form">
+  <%- include('../partials/csrf') %>
+  <button type="submit" class="danger">Buang</button>
+</form>
+<%- include('../partials/foot') %>

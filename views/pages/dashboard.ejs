@@ -1,0 +1,120 @@
+<%- include('../partials/head', { title: 'Dashboard' }) %>
+<h1>Dashboard</h1>
+
+<h2>Bulan ini</h2>
+<div class="grid">
+  <div class="card">
+    <p class="stat-label">Pemasukan</p>
+    <p class="stat-value"><%= rupiah(month.income) %></p>
+  </div>
+  <div class="card">
+    <p class="stat-label">Pengeluaran</p>
+    <p class="stat-value"><%= rupiah(month.expense) %></p>
+  </div>
+  <div class="card">
+    <p class="stat-label">Selisih</p>
+    <p class="stat-value"><%= rupiah(month.net) %></p>
+  </div>
+</div>
+
+<h2>Saldo per akun</h2>
+<% if (!balances.length) { %>
+  <p class="muted">Belum ada akun.</p>
+<% } else { %>
+  <table>
+    <thead>
+      <tr><th>Akun</th><th class="num">Saldo</th></tr>
+    </thead>
+    <tbody>
+      <% balances.forEach(function (a) { %>
+        <tr>
+          <td><%= a.name %></td>
+          <td class="num"><%= rupiah(a.balance) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<% if (alerts.length) { %>
+  <h2>Peringatan anggaran</h2>
+  <% alerts.forEach(function (a) { %>
+    <p class="alert-<%= a.level %>">
+      <%= a.category %>:
+      <% if (a.level === 'over') { %>Melebihi batas (<%= a.percent %>%)<% } else { %>Mendekati batas (<%= a.percent %>%)<% } %>
+      &middot; terpakai <%= rupiah(a.spent) %> dari <%= rupiah(a.limit) %>
+    </p>
+  <% }) %>
+<% } %>
+
+<h2>Minggu ini vs minggu lalu</h2>
+<p class="muted">Minggu dimulai hari Senin.</p>
+<table>
+  <thead>
+    <tr><th></th><th class="num">Minggu ini</th><th class="num">Minggu lalu</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pemasukan</td><td class="num"><%= rupiah(thisWeek.income) %></td><td class="num"><%= rupiah(lastWeek.income) %></td></tr>
+    <tr><td>Pengeluaran</td><td class="num"><%= rupiah(thisWeek.expense) %></td><td class="num"><%= rupiah(lastWeek.expense) %></td></tr>
+    <tr><td>Selisih</td><td class="num"><%= rupiah(thisWeek.net) %></td><td class="num"><%= rupiah(lastWeek.net) %></td></tr>
+  </tbody>
+</table>
+
+<% if (tips.length) { %>
+  <h3>Saran hemat</h3>
+  <ul>
+    <% tips.forEach(function (tip) { %><li><%= tip %></li><% }) %>
+  </ul>
+<% } %>
+
+<form method="post" action="/dashboard/ai-tips" class="inline-form">
+  <%- include('../partials/csrf') %>
+  <button type="submit">Minta saran AI</button>
+</form>
+
+<% if (typeof aiError !== 'undefined' && aiError) { %>
+  <p class="flash flash-error"><%= aiError %></p>
+<% } %>
+<% if (typeof aiTips !== 'undefined' && aiTips) { %>
+  <h3>Saran AI</h3>
+  <p class="ai-tips"><%= aiTips %></p>
+<% } %>
+
+<h2>Kategori pengeluaran teratas</h2>
+<% if (!topCategories.length) { %>
+  <p class="muted">Belum ada pengeluaran bulan ini.</p>
+<% } else { %>
+  <table>
+    <thead>
+      <tr><th>Kategori</th><th class="num">Total</th></tr>
+    </thead>
+    <tbody>
+      <% topCategories.forEach(function (c) { %>
+        <tr><td><%= c.name %></td><td class="num"><%= rupiah(c.total) %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<h2>Transaksi terakhir</h2>
+<% if (!recent.length) { %>
+  <p class="muted">Belum ada transaksi.</p>
+<% } else { %>
+  <table>
+    <thead>
+      <tr><th>Tanggal</th><th>Deskripsi</th><th>Kategori</th><th>Akun</th><th class="num">Jumlah</th></tr>
+    </thead>
+    <tbody>
+      <% recent.forEach(function (t) { %>
+        <tr>
+          <td><%= dateID(t.date) %></td>
+          <td><%= t.description %></td>
+          <td><%= t.category_name || '-' %></td>
+          <td><%= t.account_name %></td>
+          <td class="num"><%= t.type === 'expense' ? '- ' : '' %><%= rupiah(t.amount) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../partials/foot') %>

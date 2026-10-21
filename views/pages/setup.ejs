@@ -1,0 +1,16 @@
+<%- include('../partials/head', { title: 'Buat Akun Pertama' }) %>
+<h1>Buat Akun Pertama</h1>
+<form method="post" action="/setup" class="card narrow">
+  <%- include('../partials/csrf') %>
+  <% if (errors && errors.length) { %>
+    <ul class="flash flash-error">
+      <% errors.forEach(function (e) { %><li><%= e %></li><% }) %>
+    </ul>
+  <% } %>
+  <label>Username <input name="username" value="<%= username %>" required autofocus autocomplete="username"></label>
+  <label>Password <input name="password" type="password" required autocomplete="new-password"></label>
+  <label>Konfirmasi password <input name="confirm" type="password" required autocomplete="new-password"></label>
+  <p class="muted">Password minimal 10 karakter.</p>
+  <button type="submit">Buat akun</button>
+</form>
+<%- include('../partials/foot') %>
