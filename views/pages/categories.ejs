@@ -11,7 +11,7 @@
   <h2><%= kind === 'income' ? 'Pemasukan' : 'Pengeluaran' %></h2>
   <% var group = categories.filter(function (c) { return c.kind === kind; }); %>
   <% if (!group.length) { %>
-    <p class="muted">Belum ada kategori <%= kind === 'income' ? 'pemasukan' : 'pengeluaran' %>.</p>
+    <p class="empty">Belum ada kategori <%= kind === 'income' ? 'pemasukan' : 'pengeluaran' %>.</p>
   <% } else { %>
     <% group.forEach(function (c) { %>
       <div class="card">

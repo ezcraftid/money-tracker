@@ -3,8 +3,9 @@
 <p class="muted">Bulan ini. Kosongkan atau isi 0 untuk menghapus anggaran.</p>
 
 <% if (!budgets.length) { %>
-  <p class="muted">Belum ada kategori pengeluaran.</p>
+  <p class="empty">Belum ada kategori pengeluaran.</p>
 <% } else { %>
+<div class="table-wrap">
 <table>
   <thead>
     <tr>
@@ -33,5 +34,6 @@
     <% }) %>
   </tbody>
 </table>
+</div>
 <% } %>
 <%- include('../partials/foot') %>

@@ -10,6 +10,7 @@
 
 <form method="post" action="/import/<%= batch.id %>/commit">
   <%- include('../partials/csrf') %>
+  <div class="table-wrap">
   <table>
     <thead>
       <tr>
@@ -28,7 +29,7 @@
           <td><%= row.line %></td>
           <td><%= row.date ? dateID(row.date) : '-' %></td>
           <td><%= row.description || '-' %></td>
-          <td class="num"><%= row.amount !== null ? rupiah(row.amount) : '-' %></td>
+          <td class="num <%= row.type === 'expense' ? 'amount-out' : 'amount-in' %>"><%= row.amount !== null ? rupiah(row.amount) : '-' %></td>
           <td><%= row.type === 'income' ? 'Pemasukan' : row.type === 'expense' ? 'Pengeluaran' : '-' %></td>
           <td>
             <% if (row.status === 'new') { %>
@@ -56,6 +57,7 @@
       <% }) %>
     </tbody>
   </table>
+  </div>
   <button type="submit">Simpan yang baru</button>
 </form>
 

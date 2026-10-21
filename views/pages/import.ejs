@@ -41,8 +41,9 @@
 
 <h2>Riwayat impor</h2>
 <% if (!batches.length) { %>
-  <p class="muted">Belum ada impor.</p>
+  <p class="empty">Belum ada impor.</p>
 <% } else { %>
+<div class="table-wrap">
 <table>
   <thead>
     <tr>
@@ -71,5 +72,6 @@
     <% }) %>
   </tbody>
 </table>
+</div>
 <% } %>
 <%- include('../partials/foot') %>

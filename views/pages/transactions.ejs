@@ -27,8 +27,9 @@
 <p class="muted">Total <%= total %> transaksi</p>
 
 <% if (!transactions.length) { %>
-  <p class="muted">Belum ada transaksi.</p>
+  <p class="empty">Belum ada transaksi.</p>
 <% } else { %>
+<div class="table-wrap">
 <table>
   <thead>
     <tr>
@@ -47,7 +48,7 @@
         <td><%= t.description %></td>
         <td><%= t.category_name || '-' %></td>
         <td><%= t.account_name %></td>
-        <td class="num"><%= t.type === 'expense' ? '- ' : '' %><%= rupiah(t.amount) %></td>
+        <td class="num <%= t.type === 'expense' ? 'amount-out' : 'amount-in' %>"><%= t.type === 'expense' ? '- ' : '' %><%= rupiah(t.amount) %></td>
         <td>
           <a href="/transactions/<%= t.id %>/edit">Ubah</a>
           <form method="post" action="/transactions/<%= t.id %>/delete" data-confirm="Hapus transaksi ini?" class="inline-form">
@@ -59,6 +60,7 @@
     <% }) %>
   </tbody>
 </table>
+</div>
 <% } %>
 
 <% if (pages > 1) { %>
